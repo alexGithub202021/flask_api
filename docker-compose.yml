@@ -36,6 +36,7 @@ services:
       - "33062:3306"
     volumes:
       - ./mysql:/var/lib/mysql
+      - ./pydb.sql:/docker-entrypoint-initdb.d/pydb.sql  # Mount SQL script
     restart: always # restart unless stopped manually
     environment:
       MYSQL_ROOT_USER: root
