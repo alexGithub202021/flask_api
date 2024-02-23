@@ -36,12 +36,24 @@ services:
       - "33062:3306"
     volumes:
       - ./mysql:/var/lib/mysql
-      - ./pydb.sql:/docker-entrypoint-initdb.d/pydb.sql  # Mount SQL script
+      - ./db_dump:/docker-entrypoint-initdb.d  # Mount SQL script
     restart: always # restart unless stopped manually
     environment:
       MYSQL_ROOT_USER: root
       MYSQL_ROOT_PASSWORD: pwd
       MYSQL_ROOT_HOST: "%"
+    depends_on:
+      - data_volume
+    networks:
+      - pyton_flask_rest_api
+
+  data_volume: # to ensure volumes r mounted before starting the mysql container
+    image: busybox 
+    volumes:
+      - ./mysql:/var/lib/mysql
+      - ./db_dump:/docker-entrypoint-initdb.d
+    entrypoint: /bin/sh -c 'echo "Data volume container started successfully." && sleep infinity'
+    restart: "no"
     networks:
       - pyton_flask_rest_api
 
