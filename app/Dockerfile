@@ -1,5 +1,6 @@
 # Use the official Python image from Docker Hub
 FROM arm64v8/python:latest
+# FROM arm64v8/python:2.7
 
 # Set the working directory in the container
 WORKDIR /app

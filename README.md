@@ -5,29 +5,39 @@ Simple rest api with python flask
 ## Table of Contents
 
 - [Project Title](#project-title)
-  - [Table of Contents](#table-of-contents)
   - [About](#about)
   - [Features](#features)
   - [Installation](#installation)
-  - [Usage](#usage)
-  - [Contributing](#contributing)
   <!-- - [License](#license) -->
 
 ## About
 
-Provide a more detailed description of your project. Explain its purpose, goals, and any relevant background information.
+This a dockerised simple python flask rest api.
+
+- Tech stack:
+  - python
+  - flask
+  - mysql
+  - nginx
+  - docker
 
 ## Features
 
-List the key features of your project.
+- rest api endpoints:
+  - get a user: http://localhost:98/api/resource/[user_name]
+  - create a user: http://localhost:98/api/resource/[user_name]
+  - update a user: http://localhost:98/api/resource/[user_name]
+  - replace a user: http://localhost:98/api/resource/[user_name]
+  - delete a user: http://localhost:98/api/resource/[user_name]
 
-- Feature 1
-- Feature 2
-- Feature 3
+
 
 ## Installation
 
-Provide instructions on how to install and set up your project. Include any prerequisites and step-by-step installation guides.
+- clone the project
 
-```bash
-# Installation instructions go here
+- go to project folder and setup the project: 
+  - docker-compose up
+
+- run unit tests: 
+
