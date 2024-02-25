@@ -11,19 +11,23 @@ connection = mysql.connector.connect(
                 database="pydb"
             )
 
+# Define a class that contains the user API methods
 class User:
     
+    # Constructor
     def __init__(self):
         self.app = app
         self.connection = connection
         self.cursor = connection.cursor()
         
+    # @api {get} /api/user Get all users    
     def get_users(self):
         query = "SELECT * FROM user"
         self.cursor.execute(query)
         results = self.cursor.fetchall()
         return self.convert_to_json(results)
 
+    # @api {get} /api/user/:name Get user by name
     def get_user(self, name):
         if isinstance(name, str):
             query = "SELECT * FROM user where name = '{}'".format(name)
@@ -33,6 +37,7 @@ class User:
         else:
             return f'The name of the user must only contains characters or digit.'
     
+    # @api {post} /api/user Create a new user
     def create_user(self):
         #validate inputs
         data = request.json
@@ -52,6 +57,7 @@ class User:
             #if no valid inputs
             return f'data inputs are not valid'
     
+    # @api {put} /api/user/:name Replace user by name
     def replace_user(self, name):
         #validate inputs
         data = request.json
@@ -71,6 +77,7 @@ class User:
             #if no valid inputs
             return f'data inputs are not valid'
     
+    # @api {patch} /api/user/:name Update user by name
     def update_user(self, name):
         #validate inputs
         data = request.json
@@ -89,6 +96,7 @@ class User:
             #if no valid inputs
             return f'data inputs are not valid'
     
+    # @api {delete} /api/user/:name Delete user by name
     def del_user(self, name):
         #validate inputs
         data = request.json
@@ -106,8 +114,8 @@ class User:
     def run(self):
         self.app.run(host='0.0.0.0', port=5002);    
         
+    # Convert the query results to a list of dictionaries    
     def convert_to_json(self, results):
-        # Convert the query results to a list of dictionaries
         rows = []
         for row in results:
             row_dict = {}
@@ -123,6 +131,7 @@ class User:
         json_output = json.dumps(rows)
         return json_output;
     
+    # Convert the input date string to a datetime object
     def parse_datetime(self, input_datetime):
         # Parse input date string
         parsed_date = dt.strptime(input_datetime, '%d/%m/%Y')
