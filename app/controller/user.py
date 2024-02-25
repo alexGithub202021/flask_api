@@ -98,12 +98,7 @@ class User:
     
     # @api {delete} /api/user/:name Delete user by name
     def del_user(self, name):
-        #validate inputs
-        data = request.json
-        name = data.get('name')
-        
         if isinstance(name, str):
-            #insert
             query = "DELETE FROM `user` WHERE name LIKE '{}'".format(name)
             self.cursor.execute(query)
             return f'User {name} deleted !'
