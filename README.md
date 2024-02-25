@@ -30,8 +30,6 @@ This a dockerised simple python flask rest api.
   - replace a user: http://localhost:98/api/resource/[user_name]
   - delete a user: http://localhost:98/api/resource/[user_name]
 
-
-
 ## Installation
 
 - clone the project
@@ -40,4 +38,3 @@ This a dockerised simple python flask rest api.
   - docker-compose up
 
 - run unit tests: 
-

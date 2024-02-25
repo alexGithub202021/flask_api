@@ -3,7 +3,7 @@ import mysql.connector
 from flask import Flask, request, jsonify
 from datetime import datetime as dt
 
-app = Flask(__name__)
+app = Flask(__name__)   
 connection = mysql.connector.connect(
                 host="mysql_python",
                 user="root",
@@ -24,9 +24,8 @@ class User:
         results = self.cursor.fetchall()
         return self.convert_to_json(results)
 
-    # @app.route('/api/resource/<name>', methods=['GET']) -> only if direct access <> not in a class
     def get_user(self, name):
-        if isinstance(name, (str, int)):
+        if isinstance(name, str):
             query = "SELECT * FROM user where name = '{}'".format(name)
             self.cursor.execute(query)
             result = self.cursor.fetchall()
@@ -34,27 +33,78 @@ class User:
         else:
             return f'The name of the user must only contains characters or digit.'
     
-    # @app.route('/api/resource', methods=['POST']) -> only if direct access <> not in a class
     def create_user(self):
-        # data = request.json
-        # name = data.get('name')
-        # return f'New user {name} created'
-        return f'New user created'
+        #validate inputs
+        data = request.json
+        name = data.get('name')
+        idcity = data.get('idcity')
+        create_time = data.get('create_time')
+        update_time = data.get('update_time')
+        
+        if isinstance(name, str) and isinstance(idcity, int) and isinstance(create_time, str) and isinstance(update_time, str):
+            #insert
+            create_time = self.parse_datetime(create_time)
+            update_time = self.parse_datetime(update_time)
+            query = "INSERT INTO `user` (`name`, `idcity`, `create_time`, `update_time`) VALUES ('{}', {}, '{}', '{}')".format(name, idcity, create_time, update_time)
+            self.cursor.execute(query)
+            return f'New user {name} created'
+        else:
+            #if no valid inputs
+            return f'data inputs are not valid'
     
-    # @app.route('/api/resource/<name>', methods=['PUT']) -> only if direct access <> not in a class
     def replace_user(self, name):
-        return f'User {name} replaced !'
+        #validate inputs
+        data = request.json
+        name2 = data.get('name')
+        idcity = data.get('idcity')
+        create_time = data.get('create_time')
+        update_time = data.get('update_time')
+        
+        if isinstance(name, str) and isinstance(idcity, int) and isinstance(create_time, str) and isinstance(update_time, str):
+            #insert
+            create_time = self.parse_datetime(create_time)
+            update_time = self.parse_datetime(update_time)
+            query = "UPDATE `user` set `name` = '{}', `idcity` = {}, `create_time` = '{}', `update_time` = '{}' where name = '{}'".format(name2, idcity, create_time, update_time, name)
+            self.cursor.execute(query)
+            return f'User {name} replaced by user {name2}'
+        else:
+            #if no valid inputs
+            return f'data inputs are not valid'
     
-    # @app.route('/api/resource/<name>', methods=['PATCH']) -> only if direct access <> not in a class
     def update_user(self, name):
-        return f'User {name} updated !'
+        #validate inputs
+        data = request.json
+        idcity = data.get('idcity')
+        create_time = data.get('create_time')
+        update_time = data.get('update_time')
+        
+        if isinstance(name, str) and isinstance(idcity, int) and isinstance(create_time, str) and isinstance(update_time, str):
+            #insert
+            create_time = self.parse_datetime(create_time)
+            update_time = self.parse_datetime(update_time)
+            query = "UPDATE `user` set `idcity` = {}, `create_time` = '{}', `update_time` = '{}' where name = '{}'".format(idcity, create_time, update_time, name)
+            self.cursor.execute(query)
+            return f'User {name} updated'
+        else:
+            #if no valid inputs
+            return f'data inputs are not valid'
     
-    # @app.route('/api/resource/<name>', methods=['DELETE']) -> only if direct access <> not in a class 
     def del_user(self, name):
-        return f'User {name} deleted !'
+        #validate inputs
+        data = request.json
+        name = data.get('name')
+        
+        if isinstance(name, str):
+            #insert
+            query = "DELETE FROM `user` WHERE name LIKE '{}'".format(name)
+            self.cursor.execute(query)
+            return f'User {name} deleted !'
+        else:
+            #if no valid inputs
+            return f'data inputs are not valid'
 
     def run(self):
-        self.app.run(host='0.0.0.0', port=5002);
+        self.app.run(host='0.0.0.0', port=5002);    
         
     def convert_to_json(self, results):
         # Convert the query results to a list of dictionaries
@@ -72,3 +122,11 @@ class User:
         # Serialize the list of dictionaries to JSON format
         json_output = json.dumps(rows)
         return json_output;
+    
+    def parse_datetime(self, input_datetime):
+        # Parse input date string
+        parsed_date = dt.strptime(input_datetime, '%d/%m/%Y')
+        current_time = dt.now().time()
+        combined_datetime = dt.combine(parsed_date, current_time)
+        output_datetime = combined_datetime.strftime('%Y-%m-%d %H:%M:%S')
+        return output_datetime;

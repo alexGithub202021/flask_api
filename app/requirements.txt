@@ -1,8 +1,8 @@
 # Flask==0.12.5
 Flask
 Flask-SQLAlchemy
-mysqlclient
 mysql-connector-python
+mysqlclient
 pymysql
 sqlalchemy
 setuptools
