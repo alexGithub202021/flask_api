@@ -9,16 +9,24 @@ services:
     container_name: python
     build:
       context: './app/'
+    # command: python3 -Xfrozen_modules=off -m flask run --host=0.0.0.0 
     ports:
       - "5002:5002"
+      - "5678:5678" 
     volumes:
       - ./app:/app
     networks:
       - pyton_flask_rest_api
+    environment:
+      - FLASK_APP=controller.user
+      - FLASK_ENV=development
+      - PYDEVD_DISABLE_FILE_VALIDATION=1
 
   nginx:
     container_name: nginx
     image: nginx:stable-alpine
+    # build:
+    #   context: './nginx/'
     ports:
       - "98:80"
     volumes:
@@ -35,13 +43,15 @@ services:
     ports:
       - "33062:3306"
     volumes:
-      - ./mysql:/var/lib/mysql
+      # - ./mysql:/var/lib/mysql
+      - ./mysql:/tmp/mysql-data
       - ./db_dump:/docker-entrypoint-initdb.d  # Mount SQL script
     restart: always # restart unless stopped manually
     environment:
       MYSQL_ROOT_USER: root
       MYSQL_ROOT_PASSWORD: pwd
       MYSQL_ROOT_HOST: "%"
+      MYSQL_DATADIR: /tmp/mysql-data
     depends_on:
       - python
       - data_volume
@@ -51,7 +61,7 @@ services:
   data_volume: # to ensure volumes r mounted before starting the mysql container
     image: busybox 
     volumes:
-      - ./mysql:/var/lib/mysql
+      - ./mysql:/tmp/mysql-data
       - ./db_dump:/docker-entrypoint-initdb.d
     entrypoint: /bin/sh -c 'echo "Data volume container started successfully." && sleep infinity'
     restart: "no"
@@ -63,15 +73,16 @@ services:
     image: arm64v8/phpmyadmin
     restart: always
     environment:
+      # PMA_HOST: mysql_python
       PMA_HOST: docker.for.mac.localhost
       PMA_PR: https
       PMA_PORT: 33062
       PMA_USER: root
       PMA_PASSWORD: pwd
-    depends_on:
-      - mysql_python
     ports:
       - "8099:80"
+    depends_on:
+      - mysql_python
     networks:
       - pyton_flask_rest_api
 
