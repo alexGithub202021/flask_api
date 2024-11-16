@@ -1,20 +1,11 @@
 import json
-import mysql.connector
-import configparser
-
+from util.connection import Connection    
 from flask import Flask, request
 from datetime import datetime as dt
 
-config = configparser.ConfigParser()
-config.read('conf.ini')
-
 app = Flask(__name__)   
-connection = mysql.connector.connect(
-                host=config['MYSQL']['host'],
-                user=config['MYSQL']['user'],
-                password=config['MYSQL']['pwd'],
-                database=config['MYSQL']['db_name']                                           
-            )
+connection = Connection().connect()        
+
 
 # Define a class that contains the user API methods
 class User:
