@@ -4,7 +4,7 @@ import configparser
 class Connection:
     def __init__(self):
         self.config = configparser.ConfigParser()
-        self.config.read('conf.ini')
+        self.config.read('conf/conf.ini')
         
     def connect(self):
         return mysql.connector.connect(

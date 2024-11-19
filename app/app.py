@@ -1,5 +1,8 @@
-from controller.user import User
+from controller.userController import User
+from flask import Flask
 import debugpy
+
+app = Flask(__name__)   
 
 def expose_api():
     
@@ -7,16 +10,25 @@ def expose_api():
     print("Waiting for debugger to attach...")    
     
     user = User();
-    # endpoints path
-    user.app.add_url_rule('/api/users', view_func=user.get_users, methods=['GET'])
-    user.app.add_url_rule('/api/users/<string:name>', view_func=user.get_user_by_name, methods=['GET'])
-    user.app.add_url_rule('/api/users/<name>/commands/<date>', view_func=user.get_cmd_by_user, methods=['GET'])
-    user.app.add_url_rule('/api/user', view_func=user.create_user, methods=['POST'])
-    user.app.add_url_rule('/api/users/<name>', view_func=user.replace_user, methods=['PUT'])
-    user.app.add_url_rule('/api/users/<name>', view_func=user.update_user, methods=['PATCH'])
-    user.app.add_url_rule('/api/users/<name>', view_func=user.del_user, methods=['DELETE'])
+    # *** endpoints path
     
-    user.run();
+    # @app.route("/api/users", methods=["POST"])
+    # def create_user():
+    #     return user.createUser()
+    
+    # @app.route("/api/users/<string:name>", methods=["GET"])
+    # def get_user_by_name(name):
+    #     return user.getUserByName(name)   
+    
+    app.add_url_rule('/api/users', view_func=user.getUsers, methods=['GET'])
+    app.add_url_rule('/api/users/<string:name>', view_func=user.getUserByName, methods=['GET'])
+    # app.add_url_rule('/api/users/<name>/commands/<date>', view_func=user.getCmdByUser, methods=['GET'])
+    app.add_url_rule('/api/users', view_func=user.createUser, methods=['POST'])
+    app.add_url_rule('/api/users/<string:name>', view_func=user.replaceUser, methods=['PUT'])
+    app.add_url_rule('/api/users/<string:name>', view_func=user.updateUser, methods=['PATCH'])
+    app.add_url_rule('/api/users/<string:name>', view_func=user.delUser, methods=['DELETE'])
+    
+    app.run(debug=True, use_reloader=False, use_debugger=False, host='0.0.0.0', port=5002);  
 
 if __name__ == '__main__':
     expose_api();
