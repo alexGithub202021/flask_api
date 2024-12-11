@@ -1,12 +1,11 @@
-from util.connection import Connection  
 from util.functions import Functions
 from flask import request
 
-class UserMysqlService:
+class UserMysqlRepository:
     
-    def __init__(self):
+    def __init__(self, connection):
         self.functions = Functions()
-        self.connection = Connection().connect() 
+        self.connection = connection
         self.cursor = self.connection.cursor()   
     
     def getUsers(self):

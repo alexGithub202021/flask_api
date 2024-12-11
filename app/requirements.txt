@@ -8,3 +8,5 @@ sqlalchemy
 setuptools
 sqlacodegen
 debugpy
+pytest
+dependency_injector
