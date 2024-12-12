@@ -7,22 +7,37 @@ class UserMysqlRepository:
         self.functions = Functions()
         self.connection = connection
         self.cursor = self.connection.cursor()   
+        self.inputsNotValidMsg = f'inputs data are not valid'
     
     def getUsers(self):
-        query = "SELECT * FROM user"
-        self.cursor.execute(query)
-        return self.functions.convert_to_json(self.cursor)
+        
+        try:
+            query = "SELECT * FROM user"
+            self.cursor.execute(query)
+            res = self.cursor
+        except Exception as e:
+            res = f"Error occurred: {str(e)}"
+            
+        return res
 
     def getUserByName(self, name):
+        
         if isinstance(name, str): #todo: upd test
             query = """
                 SELECT * FROM user where name = %s
             """
-            self.cursor.execute(query, (name,))
-            return self.functions.convert_to_json(self.cursor)
+        
+            try:
+                self.cursor.execute(query, (name,))
+                res = self.cursor
+            except Exception as e:
+                res = f"Error occurred: {str(e)}"
+                
+            return res
+        
         else:
-            return f'The name of the user must only contains characters or digit.' 
-    
+            return self.inputsNotValidMsg    
+        
     def createUser(self):
         # todo: check inputs
         data = request.json
@@ -37,17 +52,20 @@ class UserMysqlRepository:
             query = """
                 INSERT INTO `user` (`name`, `idcity`, `create_time`, `update_time`) VALUES (%s, %s, %s, %s)
             """
+            
             try:
                 self.cursor.execute(query, (name, idcity, create_time, update_time))
                 self.connection.commit()
-                return f'New user {name} created'
-            except:
+                res = [200, f'New user {name} created']                
+            except Exception as e:
                 self.connection.rollback()
-                return "user {name} creation failed"
+                
+                res = [400, f"Error occurred: {str(e)}"]
+            
+            return res              
             
         else:
-            #if no valid inputs
-            return f'data inputs are not valid'
+            return self.inputsNotValidMsg
         
     # def getCmdByUser(self, name, date):
     #     if isinstance(name, str) and isinstance(date, str): #todo: upd test
@@ -83,13 +101,15 @@ class UserMysqlRepository:
             try:
                 self.cursor.execute(query, (name2, idcity, create_time, update_time, name))
                 self.connection.commit()
-                return f'User {name} replaced by user {name2}'                
-            except:
+                res = [200, f'User {name} replaced by user {name2}']                
+            except Exception as e:
                 self.connection.rollback()
-                return "user {name} replacement failed"
+                res = [400, f"Error occurred: {str(e)}"]
+            
+            return res    
+            
         else:
-            #if no valid inputs
-            return f'data inputs are not valid'
+            return self.inputsNotValidMsg
         
     def updateUser(self, name):
         #todo: validate inputs
@@ -108,21 +128,31 @@ class UserMysqlRepository:
             try:
                 self.cursor.execute(query, (idcity, create_time, update_time, name))
                 self.connection.commit()
-                return f'User {name} updated'                          
-            except:
+                res = [200, f'User {name} updated']                
+            except Exception as e:
                 self.connection.rollback()
-                return "user {name} update failed"        
+                res = [400, f"Error occurred: {str(e)}"]   
+                
+            return res 
+                       
         else:
-            #if no valid inputs 
-            return f'data inputs are not valid' 
+            return self.inputsNotValidMsg 
             
     def delUser (self, name):
         if isinstance(name, str): #todo: upd test
             query = """
                 DELETE FROM `user` WHERE name LIKE %s
             """
-            self.cursor.execute(query, (name,))
-            return f'User {name} deleted !'
+        
+            try:
+                self.cursor.execute(query, (name,))                
+                self.connection.commit()
+                res = [200, f'User {name} deleted']                
+            except Exception as e:
+                self.connection.rollback()
+                res = [400, f"Error occurred: {str(e)}"]   
+                
+            return res 
+                
         else:
-            #if no valid inputs
-            return f'data inputs are not valid'       
+            return self.inputsNotValidMsg       
